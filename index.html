@@ -165,7 +165,7 @@
         <div class="app-main-pad">
           <div class="cal-header">
             <div>
-              <div class="cal-title">Content Calendar</div>
+              <div class="cal-title">Growth Dashboard</div>
               <div class="cal-meta" id="calMeta"></div>
             </div>
             <div class="cal-controls">
@@ -177,6 +177,31 @@
               </div>
             </div>
           </div>
+
+          <div class="dash-summary" id="dashSummary">
+            <div class="ds-card">
+              <div class="ds-icon">🎯</div>
+              <div class="ds-info">
+                <div class="ds-val" id="dsGoal">Awareness</div>
+                <div class="ds-lbl">Current Phase</div>
+              </div>
+            </div>
+            <div class="ds-card">
+              <div class="ds-icon">📈</div>
+              <div class="ds-info">
+                <div class="ds-val" id="dsViews">0</div>
+                <div class="ds-lbl">Total Views</div>
+              </div>
+            </div>
+            <div class="ds-card">
+              <div class="ds-icon">🔥</div>
+              <div class="ds-info">
+                <div class="ds-val" id="dsStreak">0d</div>
+                <div class="ds-lbl">Active Streak</div>
+              </div>
+            </div>
+          </div>
+
           <div class="cal-box">
             <div class="cal-days-head">
               <div class="cal-dh">Sun</div><div class="cal-dh">Mon</div><div class="cal-dh">Tue</div>
@@ -321,6 +346,7 @@
       </div>
       <div class="sp-foot">
         <button class="sp-btn mark" id="spMarkBtn">🔥 Mark Done</button>
+        <button class="sp-btn metrics hidden" id="btnLogMetrics">📊 Log Metrics</button>
         <button class="sp-btn ai" id="btnAiHelp">✨ AI Help</button>
         <button class="sp-btn save" id="btnSaveSP">Save</button>
       </div>

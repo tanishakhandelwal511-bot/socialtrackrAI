@@ -46,6 +46,8 @@ export class GeminiService {
       3. No Repetition: Every post must feel fresh.
       4. Platform Native: Use hooks and formats optimized for ${req.platform}.
       
+      IMPORTANT: Keep hooks and captions concise but high-impact. Captions should be under 300 characters.
+      
       Return a JSON array of post objects for the scheduled days.
     `;
 
@@ -95,7 +97,7 @@ export class GeminiService {
       - Platform: ${context.plt}
       - Niche: ${context.niche}
       - Content Types: ${context.cts?.join(", ")}
-      - Performance: ${JSON.stringify(context.metrics || [])}
+      - Recent Performance: ${JSON.stringify((context.metrics || []).slice(-10))}
       
       TONE: Professional, encouraging, data-driven, and highly actionable.
       

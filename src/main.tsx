@@ -135,6 +135,23 @@ function showPage(name: string) {
   }
 }
 
+function confetti() {
+  const wrap = document.getElementById('confWrap')!;
+  const colors = ['#6C5CE7', '#10B981', '#F97316', '#2563EB', '#EF4444'];
+  for (let i = 0; i < 50; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    c.style.width = (Math.random() * 8 + 4) + 'px';
+    c.style.height = (Math.random() * 8 + 4) + 'px';
+    c.style.animationDuration = (Math.random() * 2 + 1) + 's';
+    c.style.animationDelay = (Math.random() * 0.5) + 's';
+    wrap.appendChild(c);
+    setTimeout(() => c.remove(), 3000);
+  }
+}
+
 function showToast(msg: string) {
   const t = document.getElementById('toast')!;
   t.textContent = msg;
@@ -287,64 +304,102 @@ function updateNavUser() {
 // ONBOARDING
 // ═══════════════════════════════════════════════════════
 const PLATFORMS = [
-  { v: 'instagram', label: 'Instagram', icon: '📸' },
-  { v: 'linkedin', label: 'LinkedIn', icon: '💼' },
-  { v: 'youtube', label: 'YouTube', icon: '▶️' },
-  { v: 'twitter', label: 'X (Twitter)', icon: '𝕏' },
-  { v: 'pinterest', label: 'Pinterest', icon: '📌' },
-  { v: 'threads', label: 'Threads', icon: '🧵' },
+  { v: 'instagram', label: 'Instagram', icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>' },
+  { v: 'linkedin', label: 'LinkedIn', icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>' },
+  { v: 'youtube', label: 'YouTube', icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.42a2.78 2.78 0 0 0-1.94 2C1 8.14 1 12 1 12s0 3.86.42 5.58a2.78 2.78 0 0 0 1.94 2c1.71.42 8.6.42 8.6.42s6.88 0 8.6-.42a2.78 2.78 0 0 0 1.94-2C23 15.86 23 12 23 12s0-3.86-.42-5.58z"></path><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"></polygon></svg>' },
+  { v: 'twitter', label: 'X (Twitter)', icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l11.733 16h4.267l-11.733 -16zM4 20l6.768 -6.768M12.466 12.466l7.534 7.534"></path></svg>' },
+  { v: 'tiktok', label: 'TikTok', icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>' },
+  { v: 'threads', label: 'Threads', icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path><path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path><path d="M12 8c2.5 0 4.5 2 4.5 4.5s-2 4.5-4.5 4.5s-4.5-2-4.5-4.5s2-4.5 4.5-4.5z"></path></svg>' },
 ];
 
-const NICHES = ['Lifestyle', 'Fitness', 'Tech', 'Finance', 'Travel', 'Fashion', 'Food', 'Education', 'Business', 'Marketing', 'Gaming', 'Health'];
+const NICHES = [
+  '🧘 Lifestyle & Wellness', '💪 Fitness & Health', '💻 Tech & AI', '💰 Personal Finance', 
+  '✈️ Luxury Travel', '👗 Sustainable Fashion', '🍳 Gourmet Food', '🎓 Online Education', 
+  '🚀 SaaS Business', '📈 Digital Marketing', '🎮 Gaming & Esports', '🧠 Mental Health',
+  '🏠 Real Estate', '🪙 Crypto & Web3', '👶 Parenting', '📸 Photography',
+  '🎨 Art & Design', '🎵 Music & Audio', '🚗 Automotive', '🐾 Pets & Animals'
+];
 
 const CONTENT_TYPES: Record<string, Array<{ v: string; i: string; s: string }>> = {
   instagram: [
-    { v: 'Reels', i: '🎬', s: 'Short-form video' },
-    { v: 'Carousel', i: '📊', s: 'Multi-slide posts' },
-    { v: 'Static Post', i: '🖼️', s: 'Single image' },
+    { v: 'Reels', i: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2" ry="2"></rect><path d="M2 8h20"></path><path d="M2 16h20"></path><path d="M8 2v20"></path><path d="M16 2v20"></path></svg>', s: 'Short-form video' },
+    { v: 'Carousel', i: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="16" height="16" rx="2" ry="2"></rect><path d="M6 22h16a2 2 0 0 0 2-2V6"></path></svg>', s: 'Educational slides' },
+    { v: 'Static Post', i: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>', s: 'Single high-quality image' },
+    { v: 'Stories', i: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8"></path><path d="M8 12h8"></path></svg>', s: 'Behind the scenes' },
+    { v: 'Guide', i: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>', s: 'Curated resources' },
   ],
   linkedin: [
-    { v: 'Text Post', i: '✍️', s: 'Written updates' },
-    { v: 'Carousel', i: '📊', s: 'Document slides' },
-    { v: 'Poll', i: '📋', s: 'Audience question' },
+    { v: 'Text Post', i: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>', s: 'Thought leadership' },
+    { v: 'Carousel', i: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="16" height="16" rx="2" ry="2"></rect><path d="M6 22h16a2 2 0 0 0 2-2V6"></path></svg>', s: 'Document slides' },
+    { v: 'Poll', i: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>', s: 'Market research' },
+    { v: 'Article', i: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"></path><path d="M8 8h8"></path><path d="M8 12h8"></path><path d="M8 16h5"></path></svg>', s: 'Long-form content' },
   ],
   youtube: [
-    { v: 'Shorts', i: '⚡', s: 'Under 60 seconds' },
-    { v: 'Video', i: '🎬', s: 'Full-length content' },
+    { v: 'Shorts', i: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>', s: 'Viral vertical video' },
+    { v: 'Long Video', i: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>', s: 'Deep dive tutorials' },
+    { v: 'Community Post', i: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-10.6 8.5 8.5 0 0 1 7 3.7"></path></svg>', s: 'Audience engagement' },
   ],
   twitter: [
-    { v: 'Text Post', i: '💬', s: 'Short update' },
-    { v: 'Thread', i: '🧵', s: 'Multi-tweet story' },
+    { v: 'Text Post', i: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>', s: 'Quick insights' },
+    { v: 'Thread', i: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>', s: 'Storytelling chains' },
+    { v: 'Poll', i: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>', s: 'Feedback' },
   ],
-  pinterest: [
-    { v: 'Pin', i: '📌', s: 'Standard pin' },
-    { v: 'Idea Pin', i: '💡', s: 'Multi-page story' },
+  tiktok: [
+    { v: 'Video', i: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>', s: 'Short-form viral' },
+    { v: 'Carousel', i: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="16" height="16" rx="2" ry="2"></rect><path d="M6 22h16a2 2 0 0 0 2-2V6"></path></svg>', s: 'Photo mode' },
   ],
   threads: [
-    { v: 'Text Post', i: '💬', s: 'Short update' },
-    { v: 'Thread', i: '🧵', s: 'Multi-post chain' },
+    { v: 'Text Post', i: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-10.6 8.5 8.5 0 0 1 7 3.7"></path><polyline points="16 12 12 8 8 12"></polyline><line x1="12" y1="16" x2="12" y2="8"></line></svg>', s: 'Conversational updates' },
   ],
 };
 
 function renderOb() {
   const s = U.obStep;
   ['ob-s1', 'ob-s2', 'ob-s3', 'ob-s4'].forEach((id, i) => {
-    document.getElementById(id)!.style.display = (i + 1 === s) ? 'block' : 'none';
+    const el = document.getElementById(id)!;
+    if (i + 1 === s) {
+      el.style.display = 'block';
+      el.style.animation = 'fadeUp 0.4s ease both';
+    } else {
+      el.style.display = 'none';
+    }
   });
   document.getElementById('obFill')!.style.width = (s / 4 * 100) + '%';
   document.getElementById('obBackBtn')!.style.visibility = s > 1 ? 'visible' : 'hidden';
   document.getElementById('obNextBtn')!.textContent = s < 4 ? 'Continue →' : 'Generate Calendar →';
+  document.getElementById('obLbl')!.textContent = `Step ${s} of 4`;
 
-  if (s === 1) buildPltGrid();
-  if (s === 2) buildNicheGrid();
-  if (s === 3) buildCTGrid();
+  // Validation check
+  let isValid = false;
+  if (s === 1) {
+    isValid = !!U.ob.plt;
+    buildPltGrid();
+  }
+  if (s === 2) {
+    isValid = !!U.ob.niche;
+    buildNicheGrid();
+  }
+  if (s === 3) {
+    isValid = U.ob.cts.length > 0;
+    buildCTGrid();
+  }
   if (s === 4) {
+    isValid = !!U.ob.freq;
     ['freq3', 'freq5', 'freq7'].forEach(id => {
       const el = document.getElementById(id)!;
       const v = parseInt(el.dataset.v!);
       if (U.ob.freq === v) el.classList.add('sel');
       else el.classList.remove('sel');
     });
+  }
+
+  const nextBtn = document.getElementById('obNextBtn') as HTMLButtonElement;
+  if (isValid) {
+    nextBtn.disabled = false;
+    nextBtn.style.opacity = '1';
+  } else {
+    nextBtn.disabled = true;
+    nextBtn.style.opacity = '0.5';
   }
 }
 
@@ -366,16 +421,25 @@ function buildPltGrid() {
 
 function buildNicheGrid() {
   const g = document.getElementById('nicheGrid')!;
+  const isCustom = U.ob.niche && !NICHES.includes(U.ob.niche);
+  
   g.innerHTML = NICHES.map(n =>
     `<div class="oc${U.ob.niche === n ? ' sel' : ''}" data-v="${n}">
       <div class="oc-label">${n}</div>
     </div>`
-  ).join('') + `<div class="oc" data-v="Custom"><div class="oc-label">Custom</div></div>`;
+  ).join('') + `<div class="oc${isCustom ? ' sel' : ''}" data-v="Custom"><div class="oc-label">Custom</div></div>`;
   
   g.querySelectorAll('.oc').forEach(el => el.addEventListener('click', (e) => {
     const v = (e.currentTarget as HTMLElement).dataset.v!;
     if (v === 'Custom') {
-      document.getElementById('customRow')!.classList.add('show');
+      const row = document.getElementById('customRow')!;
+      row.classList.add('show');
+      const input = document.getElementById('customIn') as HTMLInputElement;
+      input.focus();
+      input.oninput = () => {
+        U.ob.niche = input.value.trim();
+        renderOb();
+      };
     } else {
       U.ob.niche = v;
       document.getElementById('customRow')!.classList.remove('show');
@@ -400,13 +464,22 @@ function buildCTGrid() {
     const idx = U.ob.cts.indexOf(v);
     if (idx >= 0) U.ob.cts.splice(idx, 1);
     else U.ob.cts.push(v);
-    buildCTGrid();
+    renderOb();
   }));
 }
 
 async function startGeneration() {
   showPage('gen');
+  const steps = ['gs1', 'gs2', 'gs3'];
+  steps.forEach(id => {
+    const el = document.getElementById(id)!.parentElement!;
+    el.style.opacity = '0.3';
+  });
+
   try {
+    // Step 1
+    document.getElementById('gs1')!.parentElement!.style.opacity = '1';
+    
     const posts = await GeminiService.generateMonthlyPlan({
       platform: U.ob.plt!,
       niche: U.ob.niche!,
@@ -415,12 +488,21 @@ async function startGeneration() {
       month: MONTHS[U.calM],
       year: U.calY
     });
+
+    // Step 2
+    document.getElementById('gs2')!.parentElement!.style.opacity = '1';
     
+    U.cal = {};
     posts.forEach(p => {
       U.cal[p.key] = p;
     });
     
+    // Step 3
+    document.getElementById('gs3')!.parentElement!.style.opacity = '1';
+    
     uSave();
+    confetti();
+    showToast('Calendar ready! 🚀');
     goto('dash');
   } catch (e) {
     console.error(e);
@@ -435,6 +517,7 @@ async function startGeneration() {
 function renderCal() {
   const y = U.calY, m = U.calM;
   document.getElementById('calMonthLbl')!.textContent = MONTHS[m] + ' ' + y;
+  document.getElementById('calMeta')!.textContent = `${U.ob.plt} • ${U.ob.niche}`;
   
   const grid = document.getElementById('calGrid')!;
   const firstDOW = new Date(y, m, 1).getDay();
@@ -503,12 +586,16 @@ function openSP(key: string) {
   document.getElementById('spTags')!.innerHTML = post.tags.map(t => `<span class="sp-tag">${t}</span>`).join('');
   
   const markBtn = document.getElementById('spMarkBtn')!;
+  const metricsBtn = document.getElementById('btnLogMetrics')!;
+  
   if (U.done[key]) {
     markBtn.textContent = '✓ Done';
     markBtn.classList.add('done');
+    metricsBtn.classList.remove('hidden');
   } else {
     markBtn.textContent = '🔥 Mark Done';
     markBtn.classList.remove('done');
+    metricsBtn.classList.add('hidden');
   }
 
   document.getElementById('spOv')!.classList.add('on');
@@ -522,8 +609,19 @@ function toggleDone() {
   calcStreak();
   updateStats();
   renderCal();
-  document.getElementById('spOv')!.classList.remove('on');
-  document.getElementById('sp')!.classList.remove('on');
+  
+  // Update UI in side panel without closing it
+  const markBtn = document.getElementById('spMarkBtn')!;
+  const metricsBtn = document.getElementById('btnLogMetrics')!;
+  if (U.done[U.openKey]) {
+    markBtn.textContent = '✓ Done';
+    markBtn.classList.add('done');
+    metricsBtn.classList.remove('hidden');
+  } else {
+    markBtn.textContent = '🔥 Mark Done';
+    markBtn.classList.remove('done');
+    metricsBtn.classList.add('hidden');
+  }
 }
 
 function calcStreak() {
@@ -549,6 +647,7 @@ function updateStats() {
   const planned = Object.keys(U.cal).length;
   const done = Object.keys(U.done).filter(k => U.done[k]).length;
   const pct = planned ? Math.round((done / planned) * 100) : 0;
+  const totalViews = U.metrics.reduce((acc, m) => acc + m.views, 0);
 
   document.getElementById('streakVal')!.textContent = String(U.streak);
   document.getElementById('qPlanned')!.textContent = String(planned);
@@ -556,6 +655,18 @@ function updateStats() {
   document.getElementById('qPct')!.textContent = pct + '%';
   document.getElementById('qBest')!.textContent = String(U.best);
   
+  // Dashboard Summary
+  const dsViews = document.getElementById('dsViews');
+  if (dsViews) dsViews.textContent = totalViews.toLocaleString();
+  const dsStreak = document.getElementById('dsStreak');
+  if (dsStreak) dsStreak.textContent = U.streak + 'd';
+  const dsGoal = document.getElementById('dsGoal');
+  if (dsGoal) {
+    if (totalViews > 10000) dsGoal.textContent = 'Authority';
+    else if (totalViews > 1000) dsGoal.textContent = 'Trust';
+    else dsGoal.textContent = 'Awareness';
+  }
+
   const bar = document.getElementById('streakBar')!;
   bar.style.width = Math.min(100, (U.streak / 7) * 100) + '%';
 }
@@ -599,6 +710,9 @@ function renderAnalytics() {
   const totalPlanned = Object.keys(U.cal).length;
   const pct = totalPlanned ? Math.round((totalDone / totalPlanned) * 100) : 0;
 
+  const totalViews = U.metrics.reduce((acc, m) => acc + m.views, 0);
+  const totalLikes = U.metrics.reduce((acc, m) => acc + m.likes, 0);
+
   main.innerHTML = `
     <div class="an-header">
       <h1 class="an-title">Growth Analytics</h1>
@@ -607,37 +721,69 @@ function renderAnalytics() {
     
     <div class="an-grid">
       <div class="an-card">
-        <div class="an-card-lbl">Content Consistency</div>
-        <div class="an-card-val">${pct}%</div>
-        <div class="an-card-sub">Goal: 100% completion</div>
+        <div class="an-card-lbl">Total Views</div>
+        <div class="an-card-val">${totalViews.toLocaleString()}</div>
+        <div class="an-card-sub">Across all logged posts</div>
       </div>
       <div class="an-card">
-        <div class="an-card-lbl">Total Posts Published</div>
-        <div class="an-card-val">${totalDone}</div>
-        <div class="an-card-sub">Across all platforms</div>
+        <div class="an-card-lbl">Total Engagement</div>
+        <div class="an-card-val">${totalLikes.toLocaleString()}</div>
+        <div class="an-card-sub">Likes & interactions</div>
       </div>
       <div class="an-card">
         <div class="an-card-lbl">Active Streak</div>
         <div class="an-card-val">${U.streak}d</div>
-        <div class="an-card-sub">Keep it up!</div>
+        <div class="an-card-sub">Consistency is key</div>
       </div>
     </div>
 
     <div class="an-chart-box">
       <div class="an-chart-head">
-        <div class="an-chart-title">Engagement Overview (Mock Data)</div>
+        <div class="an-chart-title">Engagement Progress</div>
       </div>
       <div class="an-chart-body" id="anChart">
-        <!-- Chart will be rendered here -->
-        <div style="height:200px;display:flex;align-items:flex-end;gap:12px;padding:20px 0;">
-          ${[40, 65, 45, 80, 55, 90, 70].map(h => `<div style="flex:1;background:var(--accent);height:${h}%;border-radius:4px 4px 0 0;opacity:0.8;"></div>`).join('')}
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);">
-          <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
-        </div>
+        ${U.metrics.length > 0 ? `
+          <div style="height:200px;display:flex;align-items:flex-end;gap:12px;padding:20px 0;">
+            ${U.metrics.slice(-7).map(m => {
+              const h = Math.max(10, Math.min(100, (m.views / (Math.max(...U.metrics.map(x => x.views)) || 1)) * 100));
+              return `<div style="flex:1;background:var(--accent);height:${h}%;border-radius:4px 4px 0 0;opacity:0.8;position:relative;" title="${m.views} views">
+                <div style="position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:700;">${m.views}</div>
+              </div>`;
+            }).join('')}
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);">
+            ${U.metrics.slice(-7).map(m => `<span>${m.date.split('-')[2]}</span>`).join('')}
+          </div>
+        ` : `
+          <div style="height:200px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;">
+            Log metrics for your completed posts to see growth charts.
+          </div>
+        `}
+      </div>
+    </div>
+
+    <div class="an-chart-box" style="margin-top:24px;">
+      <div class="an-chart-head">
+        <div class="an-chart-title">Logged Metrics</div>
+      </div>
+      <div class="metrics-list">
+        ${U.metrics.length > 0 ? U.metrics.map((m, i) => `
+          <div class="metric-row">
+            <div class="metric-date">${m.date}</div>
+            <div class="metric-vals">👁️ ${m.views.toLocaleString()} views • ❤️ ${m.likes.toLocaleString()} likes</div>
+            <button class="metric-del" data-idx="${i}">Delete</button>
+          </div>
+        `).join('') : '<div class="empty-note">No metrics logged yet.</div>'}
       </div>
     </div>
   `;
+
+  main.querySelectorAll('.metric-del').forEach(el => el.addEventListener('click', (e) => {
+    const idx = parseInt((e.currentTarget as HTMLElement).dataset.idx!);
+    U.metrics.splice(idx, 1);
+    uSave();
+    renderAnalytics();
+  }));
 }
 // ═══════════════════════════════════════════════════════
 function goto(page: string) {
@@ -777,6 +923,46 @@ function init() {
     input.focus();
   });
   document.getElementById('spMarkBtn')?.addEventListener('click', toggleDone);
+  
+  document.getElementById('btnLogMetrics')?.addEventListener('click', async () => {
+    if (!U.openKey) return;
+    const views = await openModal({
+      title: 'Log Views',
+      desc: 'How many views did this post get?',
+      input: '0',
+      confirmTxt: 'Next'
+    });
+    if (views === false) return;
+    
+    const likes = await openModal({
+      title: 'Log Likes',
+      desc: 'How many likes did this post get?',
+      input: '0',
+      confirmTxt: 'Save Metrics'
+    });
+    if (likes === false) return;
+
+    // Update existing or push new
+    const existingIdx = U.metrics.findIndex(m => m.date === U.openKey);
+    const newMetric = {
+      date: U.openKey!,
+      views: parseInt(views as string) || 0,
+      likes: parseInt(likes as string) || 0,
+      comments: 0,
+      saves: 0
+    };
+
+    if (existingIdx >= 0) {
+      U.metrics[existingIdx] = newMetric;
+    } else {
+      U.metrics.push(newMetric);
+    }
+    
+    uSave();
+    showToast('Metrics logged! 📊');
+    renderAnalytics();
+  });
+
   document.getElementById('btnCloseSP')?.addEventListener('click', () => {
     document.getElementById('spOv')!.classList.remove('on');
     document.getElementById('sp')!.classList.remove('on');
