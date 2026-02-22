@@ -37,6 +37,7 @@ interface AppState {
   best: number;
   openKey: string | null;
   aiInited: boolean;
+  dark: boolean;
 }
 
 const U: AppState = {
@@ -52,6 +53,7 @@ const U: AppState = {
   best: 0,
   openKey: null,
   aiInited: false,
+  dark: localStorage.getItem('st_dark') === 'true',
 };
 
 // ═══════════════════════════════════════════════════════
@@ -85,9 +87,11 @@ function uLoad() {
     U.edits = d.edits || {};
     U.metrics = d.metrics || [];
     U.obStep = d.obStep || 1;
+    U.dark = d.dark !== undefined ? d.dark : (localStorage.getItem('st_dark') === 'true');
     const now = new Date();
     U.calY = now.getFullYear();
     U.calM = now.getMonth();
+    applyDark();
   } catch (e) {}
 }
 
@@ -96,8 +100,32 @@ function uSave() {
   localStorage.setItem('st_u_' + DB.session, JSON.stringify({
     ob: U.ob, cal: U.cal, done: U.done,
     edits: U.edits, metrics: U.metrics,
-    obStep: U.obStep
+    obStep: U.obStep, dark: U.dark
   }));
+  localStorage.setItem('st_dark', String(U.dark));
+}
+
+function applyDark() {
+  if (U.dark) document.documentElement.classList.add('dark');
+  else document.documentElement.classList.remove('dark');
+  
+  const icons = ['darkIcon', 'darkIcon2', 'darkIcon3'];
+  const texts = ['darkTxt', 'darkTxt2', 'darkTxt3'];
+  
+  icons.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = U.dark ? '☀️' : '🌙';
+  });
+  texts.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = U.dark ? 'Light Mode' : 'Dark Mode';
+  });
+}
+
+function toggleDark() {
+  U.dark = !U.dark;
+  uSave();
+  applyDark();
 }
 
 function resetU() {
@@ -253,7 +281,7 @@ async function handleAuth() {
       return;
     }
     if (DB.users[email]) {
-      authErr.textContent = 'User already exists.';
+      authErr.textContent = 'Account already exists with this email. Please sign in instead.';
       authErr.classList.add('show');
       return;
     }
@@ -578,6 +606,9 @@ function openSP(key: string) {
   if (!post) return;
   U.openKey = key;
   
+  const todayStr = new Date().toISOString().split('T')[0];
+  const isFuture = key > todayStr;
+  
   document.getElementById('spMeta')!.textContent = post.ct;
   document.getElementById('spTitle')!.textContent = post.hook;
   document.getElementById('spHook')!.textContent = post.hook;
@@ -585,9 +616,22 @@ function openSP(key: string) {
   document.getElementById('spCTA')!.textContent = post.cta;
   document.getElementById('spTags')!.innerHTML = post.tags.map(t => `<span class="sp-tag">${t}</span>`).join('');
   
-  const markBtn = document.getElementById('spMarkBtn')!;
+  const markBtn = document.getElementById('spMarkBtn') as HTMLButtonElement;
   const metricsBtn = document.getElementById('btnLogMetrics')!;
+  const futureWarn = document.getElementById('spFutureWarn')!;
   
+  if (isFuture) {
+    futureWarn.classList.remove('hidden');
+    markBtn.disabled = true;
+    markBtn.style.opacity = '0.5';
+    markBtn.title = "You can only mark today's or past posts as complete.";
+  } else {
+    futureWarn.classList.add('hidden');
+    markBtn.disabled = false;
+    markBtn.style.opacity = '1';
+    markBtn.title = "";
+  }
+
   if (U.done[key]) {
     markBtn.textContent = '✓ Done';
     markBtn.classList.add('done');
@@ -604,12 +648,24 @@ function openSP(key: string) {
 
 function toggleDone() {
   if (!U.openKey) return;
+  
+  const todayStr = new Date().toISOString().split('T')[0];
+  if (U.openKey > todayStr) {
+    showToast("⚠️ You can only mark today's or past posts as complete.");
+    return;
+  }
+
   U.done[U.openKey] = !U.done[U.openKey];
   uSave();
   calcStreak();
   updateStats();
   renderCal();
   
+  if (U.done[U.openKey] && U.streak > 0 && U.streak % 7 === 0) {
+    confetti();
+    showToast(`🔥 7-Day Streak Reached! Keep it up!`);
+  }
+
   // Update UI in side panel without closing it
   const markBtn = document.getElementById('spMarkBtn')!;
   const metricsBtn = document.getElementById('btnLogMetrics')!;
@@ -655,6 +711,19 @@ function updateStats() {
   document.getElementById('qPct')!.textContent = pct + '%';
   document.getElementById('qBest')!.textContent = String(U.best);
   
+  // Streak Details
+  const streakStatus = document.getElementById('streakStatus');
+  const streakNext = document.getElementById('streakNext');
+  if (streakStatus) {
+    if (U.streak >= 7) streakStatus.textContent = '🔥 On fire!';
+    else if (U.streak > 0) streakStatus.textContent = '⚡ Building up';
+    else streakStatus.textContent = '❄️ Cold';
+  }
+  if (streakNext) {
+    const nextMilestone = Math.ceil((U.streak + 1) / 7) * 7;
+    streakNext.textContent = `Next milestone: ${nextMilestone} days 🏆`;
+  }
+
   // Dashboard Summary
   const dsViews = document.getElementById('dsViews');
   if (dsViews) dsViews.textContent = totalViews.toLocaleString();
@@ -706,7 +775,8 @@ async function sendAI() {
 
 function renderAnalytics() {
   const main = document.getElementById('anMain')!;
-  const totalDone = Object.keys(U.done).filter(k => U.done[k]).length;
+  const doneKeys = Object.keys(U.done).filter(k => U.done[k]).sort().reverse();
+  const totalDone = doneKeys.length;
   const totalPlanned = Object.keys(U.cal).length;
   const pct = totalPlanned ? Math.round((totalDone / totalPlanned) * 100) : 0;
 
@@ -721,23 +791,57 @@ function renderAnalytics() {
     
     <div class="an-grid">
       <div class="an-card">
-        <div class="an-card-lbl">Total Views</div>
-        <div class="an-card-val">${totalViews.toLocaleString()}</div>
-        <div class="an-card-sub">Across all logged posts</div>
+        <div class="an-card-lbl">Posts Completed</div>
+        <div class="an-card-val">${totalDone}</div>
+        <div class="an-card-sub">Total posts marked as done</div>
       </div>
       <div class="an-card">
-        <div class="an-card-lbl">Total Engagement</div>
-        <div class="an-card-val">${totalLikes.toLocaleString()}</div>
-        <div class="an-card-sub">Likes & interactions</div>
+        <div class="an-card-lbl">Completion Rate</div>
+        <div class="an-card-val">${pct}%</div>
+        <div class="an-card-sub">Of planned posts finished</div>
       </div>
       <div class="an-card">
-        <div class="an-card-lbl">Active Streak</div>
+        <div class="an-card-lbl">Current Streak</div>
         <div class="an-card-val">${U.streak}d</div>
         <div class="an-card-sub">Consistency is key</div>
       </div>
     </div>
 
     <div class="an-chart-box">
+      <div class="an-chart-head">
+        <div class="an-chart-title">Log Metrics for a Completed Post</div>
+        <p style="font-size:12px;color:var(--muted);margin-top:4px;">Enter the actual numbers from your platform.</p>
+      </div>
+      <div class="log-form">
+        <div class="log-grid">
+          <div>
+            <label class="log-lbl">Post Date</label>
+            <select class="log-sel" id="logDate">
+              ${doneKeys.map(k => `<option value="${k}">${k} - ${U.cal[k]?.hook.slice(0, 20)}...</option>`).join('') || '<option disabled>No completed posts yet</option>'}
+            </select>
+          </div>
+          <div>
+            <label class="log-lbl">Views / Impressions</label>
+            <input class="log-input" id="logViews" type="number" placeholder="e.g. 1200">
+          </div>
+          <div>
+            <label class="log-lbl">Likes</label>
+            <input class="log-input" id="logLikes" type="number" placeholder="e.g. 84">
+          </div>
+          <div>
+            <label class="log-lbl">Comments</label>
+            <input class="log-input" id="logComments" type="number" placeholder="e.g. 12">
+          </div>
+          <div>
+            <label class="log-lbl">Saves</label>
+            <input class="log-input" id="logSaves" type="number" placeholder="e.g. 43">
+          </div>
+        </div>
+        <button class="btn-sm2" id="btnSaveMetrics">Save Metrics</button>
+      </div>
+    </div>
+
+    <div class="an-chart-box" style="margin-top:24px;">
       <div class="an-chart-head">
         <div class="an-chart-title">Engagement Progress</div>
       </div>
@@ -764,19 +868,45 @@ function renderAnalytics() {
 
     <div class="an-chart-box" style="margin-top:24px;">
       <div class="an-chart-head">
-        <div class="an-chart-title">Logged Metrics</div>
+        <div class="an-chart-title">Logged Metrics History</div>
       </div>
       <div class="metrics-list">
         ${U.metrics.length > 0 ? U.metrics.map((m, i) => `
           <div class="metric-row">
             <div class="metric-date">${m.date}</div>
-            <div class="metric-vals">👁️ ${m.views.toLocaleString()} views • ❤️ ${m.likes.toLocaleString()} likes</div>
+            <div class="metric-vals">👁️ ${m.views.toLocaleString()} • ❤️ ${m.likes.toLocaleString()} • 💬 ${m.comments} • 🔖 ${m.saves}</div>
             <button class="metric-del" data-idx="${i}">Delete</button>
           </div>
         `).join('') : '<div class="empty-note">No metrics logged yet.</div>'}
       </div>
     </div>
   `;
+
+  main.querySelector('#btnSaveMetrics')?.addEventListener('click', () => {
+    const date = (document.getElementById('logDate') as HTMLSelectElement).value;
+    const views = parseInt((document.getElementById('logViews') as HTMLInputElement).value) || 0;
+    const likes = parseInt((document.getElementById('logLikes') as HTMLInputElement).value) || 0;
+    const comments = parseInt((document.getElementById('logComments') as HTMLInputElement).value) || 0;
+    const saves = parseInt((document.getElementById('logSaves') as HTMLInputElement).value) || 0;
+
+    if (!date || date === 'No completed posts yet') {
+      showToast('Please select a completed post date.');
+      return;
+    }
+
+    const existingIdx = U.metrics.findIndex(m => m.date === date);
+    const newMetric = { date, views, likes, comments, saves };
+
+    if (existingIdx >= 0) {
+      U.metrics[existingIdx] = newMetric;
+    } else {
+      U.metrics.push(newMetric);
+    }
+    
+    uSave();
+    showToast('Metrics logged! 📊');
+    renderAnalytics();
+  });
 
   main.querySelectorAll('.metric-del').forEach(el => el.addEventListener('click', (e) => {
     const idx = parseInt((e.currentTarget as HTMLElement).dataset.idx!);
@@ -821,6 +951,7 @@ function goto(page: string) {
 // ═══════════════════════════════════════════════════════
 function init() {
   dbLoad();
+  applyDark();
   
   // Event Listeners
   document.getElementById('authBtn')?.addEventListener('click', handleAuth);
@@ -875,6 +1006,10 @@ function init() {
   document.getElementById('navSignOut')?.addEventListener('click', signOut);
   document.getElementById('navSignOut2')?.addEventListener('click', signOut);
   document.getElementById('navSignOut3')?.addEventListener('click', signOut);
+
+  document.getElementById('btnToggleDark')?.addEventListener('click', toggleDark);
+  document.getElementById('btnToggleDark2')?.addEventListener('click', toggleDark);
+  document.getElementById('btnToggleDark3')?.addEventListener('click', toggleDark);
   
   document.getElementById('aiIn')?.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') sendAI();
