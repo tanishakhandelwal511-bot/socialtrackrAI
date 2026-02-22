@@ -576,6 +576,7 @@ function renderCal() {
           </div>
           <div class="ct-tag" data-ct="${post.ct}">${post.ct}</div>
         ` : ''}
+        <div class="cal-flame">🔥</div>
       </div>
     `;
   }

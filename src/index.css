@@ -629,7 +629,7 @@ h1,h2,h3,h4{font-family:'Syne',sans-serif;}
 .ct-tag.video,.ct-tag.long-form-video,.ct-tag.image-post{background:#FEF3C7;color:#92400E;}
 .ct-tag.document-post,.ct-tag.poll,.ct-tag.pin,.ct-tag.idea-pin{background:#D1FAE5;color:#065F46;}
 /* Flame icon */
-.cal-flame{display:none;position:absolute;top:10px;right:10px;font-size:11px;line-height:1;pointer-events:none;}
+.cal-flame{display:none;position:absolute;bottom:8px;left:8px;font-size:11px;line-height:1;pointer-events:none;}
 .cal-cell.done .cal-flame{display:block;}
 
 /* ══════════════════════════════════════════════════
