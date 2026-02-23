@@ -28,6 +28,8 @@ export interface MonthlyPlanRequest {
   frequency: number;
   month: string;
   year: number;
+  theme?: string;
+  tone?: string;
 }
 
 export class GeminiService {
@@ -45,6 +47,8 @@ export class GeminiService {
       NICHE: ${req.niche}
       CONTENT TYPES TO ROTATE: ${req.contentTypes.join(", ")}
       FREQUENCY: ${req.frequency} posts per week.
+      THEME: ${req.theme || "Balanced growth"}
+      TONE: ${req.tone || "Professional and engaging"}
       
       STRATEGY GOALS:
       1. Narrative Progression: Move the audience from awareness to trust.

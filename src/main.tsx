@@ -496,7 +496,7 @@ function buildCTGrid() {
   }));
 }
 
-async function startGeneration() {
+async function startGeneration(theme?: string, tone?: string) {
   showPage('gen');
   const steps = ['gs1', 'gs2', 'gs3'];
   steps.forEach(id => {
@@ -514,13 +514,20 @@ async function startGeneration() {
       contentTypes: U.ob.cts,
       frequency: U.ob.freq!,
       month: MONTHS[U.calM],
-      year: U.calY
+      year: U.calY,
+      theme,
+      tone
     });
 
     // Step 2
     document.getElementById('gs2')!.parentElement!.style.opacity = '1';
     
-    U.cal = {};
+    // Only clear posts for the current month being generated
+    const monthPrefix = `${U.calY}-${String(U.calM + 1).padStart(2, '0')}`;
+    Object.keys(U.cal).forEach(key => {
+      if (key.startsWith(monthPrefix)) delete U.cal[key];
+    });
+
     posts.forEach(p => {
       U.cal[p.key] = p;
     });
@@ -702,11 +709,16 @@ async function sendMilestoneEmail(streak: number) {
         streak: streak
       })
     });
+    const data = await res.json();
     if (res.ok) {
       showToast(`📧 Milestone email sent!`);
+    } else {
+      console.error("Email failed:", data.error);
+      showToast(`⚠️ Email failed: ${data.error || 'Unknown error'}`);
     }
-  } catch (e) {
+  } catch (e: any) {
     console.error("Failed to send milestone email", e);
+    showToast(`⚠️ Connection error sending email.`);
   }
 }
 
@@ -1057,15 +1069,25 @@ function init() {
     renderCal();
   });
   document.getElementById('btnRegen')?.addEventListener('click', async () => {
-    const ok = await openModal({
-      title: 'Regenerate Calendar?',
-      desc: "This will replace all posts for this month. Your current edits will be lost.",
-      confirmTxt: 'Regenerate',
+    const theme = await openModal({
+      title: 'Regenerate Calendar',
+      desc: "Choose a theme for this month's strategy:",
+      input: 'Educational & Authority',
+      confirmTxt: 'Next',
       icon: '↻'
     });
-    if (ok === true) {
-      await startGeneration();
-    }
+    if (theme === false) return;
+
+    const tone = await openModal({
+      title: 'Select Tone',
+      desc: "How should the AI sound? (e.g. Witty, Professional, Bold)",
+      input: 'Professional & Actionable',
+      confirmTxt: 'Regenerate',
+      icon: '🎭'
+    });
+    if (tone === false) return;
+
+    await startGeneration(theme as string, tone as string);
   });
   
   document.getElementById('btnSaveSP')?.addEventListener('click', () => {
