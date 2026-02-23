@@ -16,17 +16,19 @@ async function startServer() {
   // API Routes
   app.post("/api/milestone", async (req, res) => {
     const { email, name, streak } = req.body;
+    const apiKey = process.env.RESEND_API_KEY;
 
-    if (!process.env.RESEND_API_KEY) {
-      console.error("RESEND_API_KEY is missing in environment variables.");
+    if (!apiKey || apiKey === "MY_RESEND_API_KEY") {
+      console.error("RESEND_API_KEY is missing or invalid.");
       return res.status(500).json({ 
         success: false, 
-        error: "Email service not configured. Please set RESEND_API_KEY." 
+        error: "Email service not configured. Please set a valid RESEND_API_KEY in environment variables." 
       });
     }
 
     try {
-      const { data, error } = await resend!.emails.send({
+      const resendClient = new Resend(apiKey);
+      const { data, error } = await resendClient.emails.send({
         from: "SocialTrackr <onboarding@resend.dev>",
         to: [email],
         subject: `🔥 You're on Fire! ${streak}-Day Streak Milestone`,

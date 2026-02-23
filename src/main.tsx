@@ -709,7 +709,18 @@ async function sendMilestoneEmail(streak: number) {
         streak: streak
       })
     });
-    const data = await res.json();
+    
+    let data;
+    const contentType = res.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      data = await res.json();
+    } else {
+      const text = await res.text();
+      console.error("Non-JSON response from server:", text);
+      showToast(`⚠️ Server error (Non-JSON response)`);
+      return;
+    }
+
     if (res.ok) {
       showToast(`📧 Milestone email sent!`);
     } else {
