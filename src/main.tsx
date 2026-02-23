@@ -532,9 +532,10 @@ async function startGeneration() {
     confetti();
     showToast('Calendar ready! 🚀');
     goto('dash');
-  } catch (e) {
+  } catch (e: any) {
     console.error(e);
-    showToast("AI Generation failed. Please try again.");
+    const msg = e.message || "AI Generation failed. Please try again.";
+    showToast(msg);
     showPage('ob');
   }
 }
@@ -768,8 +769,8 @@ async function sendAI() {
     });
     typing.remove();
     msgs.innerHTML += `<div class="ai-msg"><div class="ai-bub bot">${reply}</div></div>`;
-  } catch (e) {
-    typing.textContent = "Error connecting to AI.";
+  } catch (e: any) {
+    typing.textContent = e.message || "Error connecting to AI.";
   }
   msgs.scrollTop = msgs.scrollHeight;
 }

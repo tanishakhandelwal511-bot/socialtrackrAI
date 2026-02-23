@@ -1,7 +1,13 @@
 import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
 
 // Initialize the AI
-const getAI = () => new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const getAI = () => {
+  const key = process.env.GEMINI_API_KEY;
+  if (!key || key === "MY_GEMINI_API_KEY") {
+    throw new Error("Gemini API Key is missing. Please set GEMINI_API_KEY in your environment variables.");
+  }
+  return new GoogleGenAI({ apiKey: key });
+};
 
 export interface Post {
   key: string;
