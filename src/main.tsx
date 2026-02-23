@@ -663,9 +663,14 @@ function toggleDone() {
   updateStats();
   renderCal();
   
-  if (U.done[U.openKey] && U.streak > 0 && U.streak % 7 === 0) {
-    confetti();
-    showToast(`🔥 7-Day Streak Reached! Keep it up!`);
+  if (U.done[U.openKey] && U.streak > 0) {
+    if (U.streak % 3 === 0) {
+      sendMilestoneEmail(U.streak);
+    }
+    if (U.streak % 7 === 0) {
+      confetti();
+      showToast(`🔥 7-Day Streak Reached! Keep it up!`);
+    }
   }
 
   // Update UI in side panel without closing it
@@ -679,6 +684,29 @@ function toggleDone() {
     markBtn.textContent = '🔥 Mark Done';
     markBtn.classList.remove('done');
     metricsBtn.classList.add('hidden');
+  }
+}
+
+async function sendMilestoneEmail(streak: number) {
+  if (!DB.session) return;
+  const user = DB.users[DB.session];
+  if (!user) return;
+
+  try {
+    const res = await fetch('/api/milestone', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: user.email,
+        name: user.name,
+        streak: streak
+      })
+    });
+    if (res.ok) {
+      showToast(`📧 Milestone email sent!`);
+    }
+  } catch (e) {
+    console.error("Failed to send milestone email", e);
   }
 }
 
