@@ -686,7 +686,7 @@ function toggleDone() {
     }
     if (U.streak % 7 === 0) {
       confetti();
-      showToast(`🔥 7-Day Streak Reached! Keep it up!`);
+      showToast(`🔥 ${U.streak}-Day Streak Reached! You are unstoppable!`);
     }
   }
 
@@ -778,12 +778,14 @@ function updateStats() {
   const streakStatus = document.getElementById('streakStatus');
   const streakNext = document.getElementById('streakNext');
   if (streakStatus) {
-    if (U.streak >= 7) streakStatus.textContent = '🔥 On fire!';
+    if (U.streak >= 21) streakStatus.textContent = '👑 Unstoppable!';
+    else if (U.streak >= 14) streakStatus.textContent = '💎 Elite Consistency';
+    else if (U.streak >= 7) streakStatus.textContent = '🔥 On fire!';
     else if (U.streak > 0) streakStatus.textContent = '⚡ Building up';
     else streakStatus.textContent = '❄️ Cold';
   }
   if (streakNext) {
-    const nextMilestone = Math.ceil((U.streak + 1) / 7) * 7;
+    const nextMilestone = Math.ceil((U.streak + 1) / 3) * 3;
     streakNext.textContent = `Next milestone: ${nextMilestone} days 🏆`;
   }
 
@@ -1123,12 +1125,17 @@ function init() {
     document.getElementById('sp')!.classList.remove('on');
   });
 
-  document.getElementById('btnAiHelp')?.addEventListener('click', () => {
-    goto('ai');
+  document.getElementById('btnAiHelp')?.addEventListener('click', async () => {
     const post = U.cal[U.openKey!];
+    if (!post) return;
+    
+    goto('ai');
     const input = document.getElementById('aiIn') as HTMLInputElement;
     input.value = `Help me improve this ${post.ct} post about ${post.niche}: "${post.hook}"`;
     input.focus();
+    
+    // Automatically send the message
+    await sendAI();
   });
   document.getElementById('spMarkBtn')?.addEventListener('click', toggleDone);
   
