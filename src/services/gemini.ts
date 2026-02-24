@@ -53,8 +53,17 @@ export class GeminiService {
       STRATEGY GOALS:
       1. Narrative Progression: Move the audience from awareness to trust.
       2. Variety: Use different emotional triggers (curiosity, authority, empathy).
-      3. No Repetition: Every post must feel fresh.
+      3. No Repetition: Every post must feel fresh and unique.
       4. Platform Native: Use hooks and formats optimized for ${req.platform}.
+      5. Viral Potential: Include at least 2 "contrarian" or "hot take" ideas to spark debate.
+      6. Actionable Value: Ensure educational posts have clear, step-by-step takeaways.
+      
+      IDEAS FOR VARIETY:
+      - Behind the scenes / Day in the life
+      - Common myths in the ${req.niche} niche
+      - "How I started" vs "How it's going"
+      - Quick tips / Life hacks
+      - Industry news commentary
       
       IMPORTANT: Keep hooks and captions concise but high-impact. Captions should be under 300 characters.
       

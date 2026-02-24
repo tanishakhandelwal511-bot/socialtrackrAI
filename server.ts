@@ -15,8 +15,14 @@ async function startServer() {
 
   // API Routes
   app.post("/api/milestone", async (req, res) => {
+    console.log("Received milestone request:", req.body);
     const { email, name, streak } = req.body;
     const apiKey = process.env.RESEND_API_KEY;
+
+    if (!email || !name || !streak) {
+      console.error("Missing required fields in request body");
+      return res.status(400).json({ success: false, error: "Missing email, name, or streak" });
+    }
 
     if (!apiKey || apiKey === "MY_RESEND_API_KEY") {
       console.error("RESEND_API_KEY is missing or invalid.");
@@ -27,6 +33,7 @@ async function startServer() {
     }
 
     try {
+      console.log(`Attempting to send email to ${email} for ${streak}-day streak...`);
       const resendClient = new Resend(apiKey);
       const { data, error } = await resendClient.emails.send({
         from: "SocialTrackr <onboarding@resend.dev>",
@@ -58,15 +65,15 @@ async function startServer() {
       });
 
       if (error) {
-        console.error("Resend API Error:", error);
+        console.error("Resend API Error details:", error);
         return res.status(400).json({ success: false, error: error.message });
       }
 
-      console.log(`Email sent successfully to ${email} for ${streak}-day streak.`);
+      console.log(`Email sent successfully to ${email}. Response data:`, data);
       res.json({ success: true, data });
     } catch (err: any) {
-      console.error("Server Exception:", err);
-      res.status(500).json({ success: false, error: err.message });
+      console.error("Server Exception during email send:", err);
+      res.status(500).json({ success: false, error: err.message || "Internal server error" });
     }
   });
 

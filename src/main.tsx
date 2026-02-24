@@ -497,6 +497,7 @@ function buildCTGrid() {
 }
 
 async function startGeneration(theme?: string, tone?: string) {
+  console.log("Starting generation for:", { theme, tone, month: MONTHS[U.calM], year: U.calY });
   showPage('gen');
   const steps = ['gs1', 'gs2', 'gs3'];
   steps.forEach(id => {
@@ -506,6 +507,7 @@ async function startGeneration(theme?: string, tone?: string) {
 
   try {
     // Step 1
+    console.log("Step 1: Calling Gemini API...");
     document.getElementById('gs1')!.parentElement!.style.opacity = '1';
     
     const posts = await GeminiService.generateMonthlyPlan({
@@ -519,13 +521,19 @@ async function startGeneration(theme?: string, tone?: string) {
       tone
     });
 
+    console.log(`Generated ${posts.length} posts.`);
+
     // Step 2
+    console.log("Step 2: Updating local calendar state...");
     document.getElementById('gs2')!.parentElement!.style.opacity = '1';
     
     // Only clear posts for the current month being generated
     const monthPrefix = `${U.calY}-${String(U.calM + 1).padStart(2, '0')}`;
+    console.log(`Clearing posts starting with prefix: ${monthPrefix}`);
     Object.keys(U.cal).forEach(key => {
-      if (key.startsWith(monthPrefix)) delete U.cal[key];
+      if (key.startsWith(monthPrefix)) {
+        delete U.cal[key];
+      }
     });
 
     posts.forEach(p => {
@@ -533,14 +541,16 @@ async function startGeneration(theme?: string, tone?: string) {
     });
     
     // Step 3
+    console.log("Step 3: Saving and finalizing...");
     document.getElementById('gs3')!.parentElement!.style.opacity = '1';
     
     uSave();
+    renderCal(); // Ensure calendar is re-rendered with new posts
     confetti();
     showToast('Calendar ready! 🚀');
     goto('dash');
   } catch (e: any) {
-    console.error(e);
+    console.error("Generation error:", e);
     const msg = e.message || "AI Generation failed. Please try again.";
     showToast(msg);
     showPage('ob');
